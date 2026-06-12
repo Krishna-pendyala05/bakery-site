@@ -11,7 +11,8 @@ function AppContent() {
 
   return (
     <div>
-      {tab !== 'cakes' && <Header currentTab={tab} setTab={setTab} />}
+      {/* Header shown on every page for consistency */}
+      <Header currentTab={tab} setTab={setTab} />
 
       <main>
         {tab === 'cakes' && <Cakes setTab={setTab} />}
@@ -27,10 +28,6 @@ function AppContent() {
           <Login onLoginSuccess={() => setTab('cakes')} />
         )}
       </main>
-
-      <footer>
-        <p>© {new Date().getFullYear()} L'Étoile Sucrée Cake Atelier. All rights reserved.</p>
-      </footer>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 /* ============================================================
-   BLANK SLATE — CSS Reset & Variable Shell Only
-   All design tokens will be added by the user.
+   L'ÉTOILE SUCRÉE — Global Design System
+   Single source of truth for all design tokens.
    ============================================================ */
 
 *, *::before, *::after {
@@ -9,33 +9,61 @@
   padding: 0;
 }
 
+/* ── Design Tokens ────────────────────────────────────────── */
 :root {
-  /* Palette tokens — to be filled in */
-  --color-primary: ;
-  --color-secondary: ;
-  --color-accent: ;
-  --color-bg: ;
-  --color-surface: ;
-  --color-text: ;
-  --color-text-muted: ;
-  --color-border: ;
+  /* Brand Palette */
+  --color-brand:        #F5EA8B;   /* Primary yellow */
+  --color-brand-dark:   #e8d96a;   /* Hover / pressed yellow */
+  --color-ink:          #1A1A1A;   /* Near-black for text & icons */
+  --color-ink-muted:    #555550;   /* Secondary text */
+  --color-bg:           #FDFDF5;   /* Off-white page background */
+  --color-surface:      #FFFFFF;   /* Card / panel background */
+  --color-border:       #E8E4CC;   /* Subtle dividers */
 
-  /* Typography — to be filled in */
-  --font-body: sans-serif;
-  --font-heading: sans-serif;
+  /* Legacy aliases (keep backward compat) */
+  --color-primary:      var(--color-brand);
+  --color-text:         var(--color-ink);
+  --color-text-muted:   var(--color-ink-muted);
 
-  /* Spacing & radius — to be filled in */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 16px;
+  /* Typography */
+  --font-logo:    'Jaro', sans-serif;
+  --font-heading: 'Cormorant SC', serif;
+  --font-body:    'Cormorant SC', serif;
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* Border radius */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   16px;
   --radius-full: 9999px;
+
+  /* Navbar */
+  --nav-height:      72px;
+  --nav-bg:          var(--color-brand);
+  --nav-border:      var(--color-border);
+  --nav-icon-size:   26px;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
 }
 
+/* ── Reset ────────────────────────────────────────────────── */
 html, body {
   height: 100%;
   font-family: var(--font-body);
   background-color: var(--color-bg);
   color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
 }
 
 img, video {
@@ -46,6 +74,8 @@ img, video {
 button {
   cursor: pointer;
   font-family: inherit;
+  border: none;
+  background: none;
 }
 
 a {
@@ -56,3 +86,4 @@ a {
 ul, ol {
   list-style: none;
 }
+
