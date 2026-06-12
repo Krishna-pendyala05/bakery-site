@@ -1,4 +1,5 @@
 import { Response } from 'express';
+import { Prisma } from '@prisma/client';
 import prisma from '../config/db';
 import { AuthRequest } from '../middleware/authMiddleware';
 
@@ -22,7 +23,7 @@ export const createOrder = async (req: AuthRequest, res: Response): Promise<void
 
   try {
     // Perform database transaction to ensure order and items are created together
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // 1. Create the base Order record
       const order = await tx.order.create({
         data: {
