@@ -1,242 +1,58 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap');
+/* ============================================================
+   BLANK SLATE — CSS Reset & Variable Shell Only
+   All design tokens will be added by the user.
+   ============================================================ */
 
-:root {
-  /* Fonts */
-  --font-heading: 'Outfit', sans-serif;
-  --font-body: 'Inter', sans-serif;
-
-  /* HSL Colors - Warm Bakery / Caramel & Cream Palette */
-  --primary-h: 24;
-  --primary-s: 85%;
-  --primary-l: 50%; /* Warm Caramel */
-  --primary: hsl(var(--primary-h), var(--primary-s), var(--primary-l));
-  --primary-light: hsl(var(--primary-h), var(--primary-s), 65%);
-  --primary-dark: hsl(var(--primary-h), var(--primary-s), 38%);
-  
-  --secondary-h: 36;
-  --secondary-s: 40%;
-  --secondary-l: 96%; /* Champagne Cream */
-  --secondary: hsl(var(--secondary-h), var(--secondary-s), var(--secondary-l));
-
-  /* Light Theme Defaults */
-  --bg-app: #FAF9F6; /* Warm off-white */
-  --bg-surface: #FFFFFF;
-  --bg-surface-glass: rgba(255, 255, 255, 0.7);
-  --border-color: rgba(219, 110, 38, 0.12);
-  --border-focus: rgba(219, 110, 38, 0.5);
-  
-  --text-primary: #1C1917; /* Dark Charcoal */
-  --text-secondary: #57534E; /* Warm Grey */
-  --text-muted: #A8A29E;
-  --text-on-primary: #FFFFFF;
-  
-  --shadow-sm: 0 2px 4px rgba(28, 25, 23, 0.04);
-  --shadow-md: 0 8px 16px rgba(28, 25, 23, 0.06);
-  --shadow-lg: 0 16px 32px rgba(28, 25, 23, 0.08);
-  --shadow-glass: 0 8px 32px 0 rgba(219, 110, 38, 0.04);
-
-  --radius-sm: 8px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
-  --radius-full: 9999px;
-
-  --transition-fast: 150ms ease;
-  --transition-normal: 250ms ease;
-  --transition-slow: 400ms ease;
-}
-
-/* Dark Mode Preference */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg-app: #0F0E0D; /* Very dark chocolate slate */
-    --bg-surface: #1C1917; /* Slate dark */
-    --bg-surface-glass: rgba(28, 25, 23, 0.7);
-    --border-color: rgba(219, 110, 38, 0.18);
-    
-    --text-primary: #F5F5F4;
-    --text-secondary: #D6D3D1;
-    --text-muted: #78716C;
-    
-    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
-    --shadow-md: 0 8px 16px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 16px 32px rgba(0, 0, 0, 0.4);
-    --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-  }
-}
-
-/* CSS Reset & Core Styles */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-body {
+:root {
+  /* Palette tokens — to be filled in */
+  --color-primary: ;
+  --color-secondary: ;
+  --color-accent: ;
+  --color-bg: ;
+  --color-surface: ;
+  --color-text: ;
+  --color-text-muted: ;
+  --color-border: ;
+
+  /* Typography — to be filled in */
+  --font-body: sans-serif;
+  --font-heading: sans-serif;
+
+  /* Spacing & radius — to be filled in */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+}
+
+html, body {
+  height: 100%;
   font-family: var(--font-body);
-  background-color: var(--bg-app);
-  color: var(--text-primary);
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  min-height: 100vh;
-  overflow-x: hidden;
+  background-color: var(--color-bg);
+  color: var(--color-text);
 }
 
-/* Typography */
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading);
-  font-weight: 700;
-  line-height: 1.25;
-  color: var(--text-primary);
+img, video {
+  display: block;
+  max-width: 100%;
 }
 
-p {
-  color: var(--text-secondary);
+button {
+  cursor: pointer;
+  font-family: inherit;
 }
 
 a {
-  color: var(--primary);
+  color: inherit;
   text-decoration: none;
-  transition: color var(--transition-fast);
 }
 
-a:hover {
-  color: var(--primary-light);
-}
-
-/* Custom Premium Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--bg-app);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: var(--radius-full);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-light);
-}
-
-/* Glassmorphism card utility */
-.glass-card {
-  background: var(--bg-surface-glass);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-glass);
-  border-radius: var(--radius-md);
-}
-
-/* Focus outline helpers */
-*:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
-}
-
-/* Interactive elements */
-button, .btn {
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: 1rem;
-  padding: 0.75rem 1.5rem;
-  border-radius: var(--radius-md);
-  border: 1px solid transparent;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  user-select: none;
-}
-
-.btn-primary {
-  background-color: var(--primary);
-  color: var(--text-on-primary);
-  box-shadow: 0 4px 12px rgba(219, 110, 38, 0.2);
-}
-
-.btn-primary:hover:not(:disabled) {
-  background-color: var(--primary-light);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(219, 110, 38, 0.3);
-}
-
-.btn-primary:active:not(:disabled) {
-  transform: scale(0.98);
-}
-
-.btn-primary:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.btn-secondary {
-  background-color: transparent;
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
-}
-
-.btn-secondary:hover:not(:disabled) {
-  background-color: var(--secondary);
-  border-color: var(--primary-light);
-  transform: translateY(-1px);
-}
-
-.btn-secondary:active:not(:disabled) {
-  transform: scale(0.98);
-}
-
-/* Form controls */
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1.25rem;
-}
-
-.form-label {
-  font-family: var(--font-heading);
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-.form-input {
-  font-family: var(--font-body);
-  font-size: 1rem;
-  padding: 0.75rem 1rem;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
-  background-color: var(--bg-surface);
-  color: var(--text-primary);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--border-focus);
-}
-
-/* Skeleton loader shimmer animation */
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-.shimmer {
-  background: linear-gradient(90deg, 
-    var(--bg-app) 25%, 
-    var(--border-color) 37%, 
-    var(--bg-app) 63%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
+ul, ol {
+  list-style: none;
 }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../utils/api';
 import { useCart } from '../hooks/useCart';
 import type { Cake } from '../hooks/useCart';
-import { ShoppingBag, Star, RefreshCw } from 'lucide-react';
+import { Hero } from '../components/Hero';
 
 // Fallback products (matching database seeds) in case backend is loading/offline
 const FALLBACK_CAKES: Cake[] = [
@@ -29,7 +29,7 @@ const FALLBACK_CAKES: Cake[] = [
     name: 'Zesty Lemon Blueberry Cake',
     description: 'Light lemon sponge layers studded with fresh wild blueberries, filled with house-made tangy lemon curd and swiss meringue buttercream.',
     price: 36.99,
-    imageUrl: 'https://images.unsplash.com/photo-1535141192574-5d4897c13636?w=600&auto=format&fit=crop&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=600&auto=format&fit=crop&q=80',
     category: 'Fruity',
     available: true,
   },
@@ -59,10 +59,14 @@ const FALLBACK_CAKES: Cake[] = [
     imageUrl: 'https://images.unsplash.com/photo-1621303837174-89787a7d4729?w=600&auto=format&fit=crop&q=80',
     category: 'Signature',
     available: true,
-  }
+  },
 ];
 
-export const Cakes: React.FC = () => {
+interface CakesProps {
+  setTab: (tab: 'cakes' | 'checkout' | 'login') => void;
+}
+
+export const Cakes: React.FC<CakesProps> = ({ setTab }) => {
   const { addToCart } = useCart();
   const [cakes, setCakes] = useState<Cake[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -88,187 +92,58 @@ export const Cakes: React.FC = () => {
     fetchCakes();
   }, []);
 
-  // Resolve unique available categories in the data
   const availableCategories = ['All', ...Array.from(new Set(cakes.map(c => c.category)))];
 
-  const filteredCakes = activeCategory === 'All' 
-    ? cakes 
+  const filteredCakes = activeCategory === 'All'
+    ? cakes
     : cakes.filter(cake => cake.category.toLowerCase() === activeCategory.toLowerCase());
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto 4rem auto', padding: '0 1rem' }}>
-      
-      {/* Hero Header */}
-      <div style={{ textAlign: 'center', margin: '3rem 0' }}>
-        <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '2.5rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
-          Our Freshly Baked Collection
-        </h2>
-        <p style={{ color: 'var(--text-secondary)', maxWidth: '600px', margin: '0.75rem auto 0 auto', fontSize: '1rem' }}>
-          Indulge in our selection of premium hand-crafted cakes made with organic, locally sourced ingredients and absolute love.
-        </p>
-        
+    <>
+      <Hero setTab={setTab} />
+
+      <main>
+        {/* Offline notice */}
         {apiFailed && (
-          <span style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            marginTop: '1rem',
-            fontSize: '0.8rem',
-            backgroundColor: 'rgba(219, 110, 38, 0.08)',
-            border: '1px solid rgba(219, 110, 38, 0.2)',
-            color: 'var(--primary-dark)',
-            padding: '0.25rem 0.75rem',
-            borderRadius: 'var(--radius-full)'
-          }}>
-            Offline Mode: Operating with local offline catalog.
-            <button onClick={fetchCakes} style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', display: 'flex' }} title="Retry API">
-              <RefreshCw size={12} />
-            </button>
-          </span>
+          <p>
+            Offline mode — showing local catalog.{' '}
+            <button onClick={fetchCakes}>Retry</button>
+          </p>
         )}
-      </div>
 
-      {/* Category Navigation */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        gap: '0.75rem',
-        marginBottom: '2.5rem',
-        flexWrap: 'wrap'
-      }}>
-        {availableCategories.map(category => (
-          <button
-            key={category}
-            onClick={() => setActiveCategory(category)}
-            className={`btn ${activeCategory === category ? 'btn-primary' : 'btn-secondary'}`}
-            style={{
-              padding: '0.5rem 1.25rem',
-              fontSize: '0.85rem',
-              borderRadius: 'var(--radius-full)'
-            }}
-          >
-            {category}
-          </button>
-        ))}
-      </div>
-
-      {/* Grid List */}
-      {loading ? (
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-          gap: '2rem'
-        }}>
-          {[1, 2, 3].map(i => (
-            <div key={i} className="glass-card" style={{ height: '420px', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-              <div className="shimmer" style={{ height: '220px', width: '100%' }} />
-              <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', flex: 1 }}>
-                <div className="shimmer" style={{ height: '24px', width: '70%', borderRadius: '4px' }} />
-                <div className="shimmer" style={{ height: '16px', width: '90%', borderRadius: '4px' }} />
-                <div className="shimmer" style={{ height: '16px', width: '50%', borderRadius: '4px', marginTop: 'auto' }} />
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-          gap: '2.5rem'
-        }}>
-          {filteredCakes.map(cake => (
-            <div 
-              key={cake.id} 
-              className="glass-card" 
-              style={{ 
-                display: 'flex', 
-                flexDirection: 'column', 
-                overflow: 'hidden', 
-                transition: 'all var(--transition-normal)',
-                position: 'relative'
-              }}
+        {/* Category filter */}
+        <nav aria-label="Cake categories">
+          {availableCategories.map(category => (
+            <button
+              key={category}
+              onClick={() => setActiveCategory(category)}
+              aria-pressed={activeCategory === category}
             >
-              {/* Product Image */}
-              <div style={{ position: 'relative', height: '220px', width: '100%', overflow: 'hidden' }}>
-                <img 
-                  src={cake.imageUrl} 
-                  alt={cake.name} 
-                  style={{ 
-                    width: '100%', 
-                    height: '100%', 
-                    objectFit: 'cover',
-                  }} 
-                />
-                <span style={{
-                  position: 'absolute',
-                  top: '1rem',
-                  right: '1rem',
-                  backgroundColor: 'var(--bg-surface-glass)',
-                  backdropFilter: 'blur(8px)',
-                  color: 'var(--primary-dark)',
-                  fontSize: '0.75rem',
-                  fontWeight: 'bold',
-                  padding: '0.25rem 0.75rem',
-                  borderRadius: 'var(--radius-full)',
-                  border: '1px solid var(--border-color)',
-                  boxShadow: 'var(--shadow-sm)'
-                }}>
-                  {cake.category}
-                </span>
-              </div>
-
-              {/* Product Info */}
-              <div style={{ 
-                padding: '1.5rem', 
-                display: 'flex', 
-                flexDirection: 'column', 
-                flex: 1, 
-                gap: '0.75rem' 
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: 700, fontFamily: 'var(--font-heading)' }}>
-                    {cake.name}
-                  </h3>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#EAB308', flexShrink: 0 }}>
-                    <Star size={16} fill="#EAB308" />
-                    <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>4.9</span>
-                  </div>
-                </div>
-
-                <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', flex: 1 }}>
-                  {cake.description}
-                </p>
-
-                {/* Footer details */}
-                <div style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'space-between', 
-                  marginTop: '1rem',
-                  borderTop: '1px solid var(--border-color)',
-                  paddingTop: '1rem'
-                }}>
-                  <div>
-                    <p style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)' }}>Price</p>
-                    <p style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'var(--font-heading)' }}>
-                      ${cake.price.toFixed(2)}
-                    </p>
-                  </div>
-
-                  <button 
-                    className="btn btn-primary"
-                    onClick={() => addToCart(cake)}
-                    style={{ padding: '0.5rem 1rem', fontSize: '0.85rem' }}
-                  >
-                    <ShoppingBag size={16} />
-                    Add to Cart
-                  </button>
-                </div>
-              </div>
-            </div>
+              {category}
+            </button>
           ))}
-        </div>
-      )}
-    </div>
+        </nav>
+
+        {/* Product grid */}
+        {loading ? (
+          <p>Loading cakes…</p>
+        ) : (
+          <ul>
+            {filteredCakes.map(cake => (
+              <li key={cake.id}>
+                <img src={cake.imageUrl} alt={cake.name} />
+                <div>
+                  <h2>{cake.name}</h2>
+                  <p>{cake.category}</p>
+                  <p>{cake.description}</p>
+                  <p>${cake.price.toFixed(2)}</p>
+                  <button onClick={() => addToCart(cake)}>Add to Cart</button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </main>
+    </>
   );
 };

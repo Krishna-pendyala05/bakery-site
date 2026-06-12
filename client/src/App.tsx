@@ -10,37 +10,26 @@ function AppContent() {
   const [tab, setTab] = useState<'cakes' | 'checkout' | 'login'>('cakes');
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {/* Premium Header */}
-      <Header currentTab={tab} setTab={setTab} />
+    <div>
+      {tab !== 'cakes' && <Header currentTab={tab} setTab={setTab} />}
 
-      {/* Main Page Area */}
-      <main style={{ flex: 1, paddingBottom: '3rem' }}>
-        {tab === 'cakes' && <Cakes />}
-        
+      <main>
+        {tab === 'cakes' && <Cakes setTab={setTab} />}
+
         {tab === 'checkout' && (
-          <Checkout 
-            onRequireLogin={() => setTab('login')} 
-            onContinueShopping={() => setTab('cakes')} 
+          <Checkout
+            onRequireLogin={() => setTab('login')}
+            onContinueShopping={() => setTab('cakes')}
           />
         )}
-        
+
         {tab === 'login' && (
           <Login onLoginSuccess={() => setTab('cakes')} />
         )}
       </main>
 
-      {/* Footer */}
-      <footer style={{
-        textAlign: 'center',
-        padding: '2rem',
-        borderTop: '1px solid var(--border-color)',
-        color: 'var(--text-muted)',
-        fontSize: '0.8rem',
-        marginTop: 'auto'
-      }}>
+      <footer>
         <p>© {new Date().getFullYear()} L'Étoile Sucrée Cake Atelier. All rights reserved.</p>
-        <p style={{ marginTop: '0.25rem', fontSize: '0.75rem' }}>Indulging sweet moments with premium local craft.</p>
       </footer>
     </div>
   );
