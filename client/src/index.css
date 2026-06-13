@@ -43,6 +43,7 @@
   --font-heading: 'Cormorant SC', serif;
   --font-body:    'Cormorant SC', serif;
   --font-quote:   'Jura', sans-serif;
+  --font-upright: 'Cormorant Upright', serif; /* elegant body / philosophy copy */
 
   /* Spacing scale */
   --space-1: 4px;

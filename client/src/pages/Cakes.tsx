@@ -3,6 +3,7 @@ import api from '../utils/api';
 import { useCart } from '../hooks/useCart';
 import type { Cake } from '../hooks/useCart';
 import { Hero } from '../components/Hero';
+import { Philosophy } from '../components/Philosophy';
 
 // Fallback products (matching database seeds) in case backend is loading/offline
 const FALLBACK_CAKES: Cake[] = [
@@ -101,6 +102,7 @@ export const Cakes: React.FC<CakesProps> = ({ setTab }) => {
   return (
     <>
       <Hero setTab={setTab} />
+      <Philosophy />
 
       <main>
         {/* Offline notice */}
