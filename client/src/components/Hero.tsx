@@ -74,9 +74,61 @@ export const Hero: React.FC<HeroProps> = ({ setTab }) => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  /* Smooth scroll to menu section — same easing as nav bar Menu link */
+  const scrollToMenu = () => {
+    const menuSection = document.getElementById('menu-section');
+    if (!menuSection) return;
+
+    const navHeight = 80;
+    const targetY = menuSection.getBoundingClientRect().top + window.scrollY - navHeight;
+    const startY = window.scrollY || window.pageYOffset;
+    const difference = targetY - startY;
+    const duration = 1600;
+    const startTime = performance.now();
+
+    const easeInOutCubic = (t: number) =>
+      t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+    const step = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      window.scrollTo(0, startY + difference * easeInOutCubic(progress));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+
+    requestAnimationFrame(step);
+    window.history.replaceState(null, '', '#menu');
+  };
+
+  /* Smooth scroll to custom order section — same easing */
+  const scrollToCustomOrder = () => {
+    const customSection = document.getElementById('custom-order-section');
+    if (!customSection) return;
+
+    const navHeight = 80;
+    const targetY = customSection.getBoundingClientRect().top + window.scrollY - navHeight;
+    const startY = window.scrollY || window.pageYOffset;
+    const difference = targetY - startY;
+    const duration = 1600;
+    const startTime = performance.now();
+
+    const easeInOutCubic = (t: number) =>
+      t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+    const step = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      window.scrollTo(0, startY + difference * easeInOutCubic(progress));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+
+    requestAnimationFrame(step);
+    window.history.replaceState(null, '', '#custom-order');
+  };
+
   return (
     <>
-      {/* ── Scoped styles ───────────────────────────────────── */}
       <style>{`
         /* ── Scroll Pinned Container ───────────────────────── */
         .hero-scroll-container {
@@ -131,7 +183,7 @@ export const Hero: React.FC<HeroProps> = ({ setTab }) => {
         .reveal-title {
           font-family: var(--font-logo);
           font-size: clamp(24px, 3.5vw, 42px);
-          color: var(--color-hero-rose);
+          color: #7A5145; /* Consistent milk chocolate brown */
           text-transform: uppercase;
           letter-spacing: 0.12em;
           margin: 0;
@@ -141,7 +193,7 @@ export const Hero: React.FC<HeroProps> = ({ setTab }) => {
           font-family: var(--font-quote);
           font-size: clamp(16px, 2.2vw, 28px);
           font-style: italic;
-          color: var(--color-hero-rose-dark);
+          color: #7A5145; /* Consistent milk chocolate brown */
           margin: 0;
         }
 
@@ -360,7 +412,10 @@ export const Hero: React.FC<HeroProps> = ({ setTab }) => {
           background: var(--color-ticker-bg);
           border-radius: var(--ticker-radius) var(--ticker-radius) 0 0;
           overflow: hidden;
-          padding: 16px 0;
+          height: 72px;               /* matches nav bar height exactly */
+          box-sizing: border-box;
+          border-bottom: 10px solid var(--color-bg); /* matches nav bar bottom stroke */
+          padding: 0;
           z-index: 1;
           transform: translateY(calc(100% + 20px - var(--unzip-progress) * 100% - var(--unzip-progress) * 20px));
           transition: transform 50ms linear, left 50ms linear, right 50ms linear, border-radius 50ms linear;
@@ -477,7 +532,8 @@ export const Hero: React.FC<HeroProps> = ({ setTab }) => {
             right: auto !important;
             width: 100% !important;
             border-radius: 0 !important;
-            padding: 12px 0;
+            height: 72px !important;
+            padding: 0 !important;
           }
         }
       `}</style>
@@ -544,14 +600,14 @@ export const Hero: React.FC<HeroProps> = ({ setTab }) => {
             <button
               id="hero-explore-btn"
               className="hero-cta-btn hero-cta-explore"
-              onClick={() => setTab('cakes')}
+              onClick={scrollToMenu}
             >
               Explore Menu
             </button>
             <button
               id="hero-custom-btn"
               className="hero-cta-btn hero-cta-custom"
-              onClick={() => setTab('checkout')}
+              onClick={scrollToCustomOrder}
             >
               Custom Order
             </button>

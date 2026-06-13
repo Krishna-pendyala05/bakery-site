@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ShoppingBag, CircleUser, Menu, X } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useCart } from '../hooks/useCart';
+import { ProfileDrawer } from './ProfileDrawer';
 
 /* ── Prop types ──────────────────────────────────────────── */
 interface HeaderProps {
@@ -12,17 +13,104 @@ interface HeaderProps {
 /* ── NAV ITEMS ───────────────────────────────────────────── */
 const NAV_LINKS: { label: string; tab: 'cakes' | 'checkout' | 'login' }[] = [
   { label: 'Menu',         tab: 'cakes'    },
-  { label: 'Custom Order', tab: 'checkout' },
+  { label: 'Custom Order', tab: 'cakes'    },
   { label: 'Our Story',    tab: 'cakes'    }, // placeholder — wire to page later
 ];
 
 /* ── Component ───────────────────────────────────────────── */
 export const Header: React.FC<HeaderProps> = ({ currentTab, setTab }) => {
   const { user, logout } = useAuth();
-  const { cartCount }    = useCart();
+  const { cartCount, setIsCartOpen } = useCart();
   const [mobileOpen, setMobileOpen]   = useState(false);
   const [activeLabel, setActiveLabel] = useState<string | null>(null);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
+
+  // Get initials from user name
+  const getInitials = (name?: string) => {
+    if (!name) return '?';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0][0].toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  };
+
+  /* Scroll Spy and Active Label Synchronizer */
+  useEffect(() => {
+    if (currentTab === 'checkout') {
+      setActiveLabel('Custom Order');
+      return;
+    }
+    if (currentTab === 'login') {
+      setActiveLabel(null);
+      return;
+    }
+
+    let isFirstCall = true;
+
+    const handleScroll = () => {
+      if ((window as any).isProgrammaticScroll) {
+        return;
+      }
+
+      const menuSection = document.getElementById('menu-section');
+      const customSection = document.getElementById('custom-order-section');
+      const customContainer = document.getElementById('custom-order-container');
+      const navHeight = 80;
+
+      if (customSection && customContainer) {
+        const customRect = customSection.getBoundingClientRect();
+        if (customRect.top <= navHeight + 120 && customRect.bottom >= navHeight) {
+          const containerRect = customContainer.getBoundingClientRect();
+          const startY = containerRect.top;
+          const scrollRange = window.innerHeight * 1.3;
+          const scrollOffset = -startY;
+          const deadZone = 200;
+
+          let progress = 0;
+          if (scrollOffset > deadZone) {
+            progress = Math.min((scrollOffset - deadZone) / (scrollRange - deadZone), 1);
+          }
+
+          if (progress >= 0.5) {
+            setActiveLabel('Our Story');
+            if (window.location.hash !== '#our-story') {
+              window.history.replaceState(null, '', '#our-story');
+            }
+          } else {
+            setActiveLabel('Custom Order');
+            if (window.location.hash !== '#custom-order') {
+              window.history.replaceState(null, '', '#custom-order');
+            }
+          }
+          return;
+        }
+      }
+
+      if (menuSection) {
+        const menuRect = menuSection.getBoundingClientRect();
+        if (menuRect.top <= navHeight + 80 && menuRect.bottom >= navHeight + 80) {
+          setActiveLabel('Menu');
+          if (window.location.hash !== '#menu') {
+            window.history.replaceState(null, '', '#menu');
+          }
+          return;
+        }
+      }
+
+      setActiveLabel(null);
+      if (!isFirstCall) {
+        if (window.location.hash === '#menu' || window.location.hash === '#custom-order' || window.location.hash === '#our-story') {
+          window.history.replaceState(null, '', '#');
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    isFirstCall = false;
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [currentTab]);
 
   /* Close drawer when clicking outside */
   useEffect(() => {
@@ -42,17 +130,89 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setTab }) => {
     return () => document.removeEventListener('keydown', handler);
   }, []);
 
-  /* Navigate — only nav-link clicks set the active label */
+  /* Helper for nice and smooth easing scroll (easeInOutCubic curve) */
+  const customSmoothScroll = (targetY: number, duration = 1600) => {
+    (window as any).isProgrammaticScroll = true;
+    const startY = window.scrollY || window.pageYOffset;
+    const difference = targetY - startY;
+    const startTime = performance.now();
+
+    const easeInOutCubic = (t: number) => 
+      t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+    const step = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const ease = easeInOutCubic(progress);
+      
+      window.scrollTo(0, startY + difference * ease);
+
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        setTimeout(() => {
+          (window as any).isProgrammaticScroll = false;
+        }, 100);
+      }
+    };
+
+    requestAnimationFrame(step);
+  };
+
+  /* Navigate — handles smooth scrolling to Menu and URL updating */
   const navigateNav = (label: string, tab: 'cakes' | 'checkout' | 'login') => {
-    setActiveLabel(label);
     setTab(tab);
     setMobileOpen(false);
+
+    if (label === 'Menu') {
+      if (currentTab === 'cakes') {
+        const menuSection = document.getElementById('menu-section');
+        if (menuSection) {
+          const navHeight = 80;
+          const targetY = menuSection.getBoundingClientRect().top + window.scrollY - navHeight;
+          customSmoothScroll(targetY, 1600); // majestic 1.6s scroll
+        }
+      } else {
+        window.location.hash = 'menu';
+      }
+    } else if (label === 'Custom Order') {
+      if (currentTab === 'cakes') {
+        const customContainer = document.getElementById('custom-order-container');
+        if (customContainer) {
+          const navHeight = 80;
+          const targetY = customContainer.getBoundingClientRect().top + window.scrollY - navHeight;
+          customSmoothScroll(targetY, 1600); // majestic 1.6s scroll
+        }
+      } else {
+        window.location.hash = 'custom-order';
+      }
+    } else if (label === 'Our Story') {
+      if (currentTab === 'cakes') {
+        const customContainer = document.getElementById('custom-order-container');
+        if (customContainer) {
+          const navHeight = 80;
+          const containerRect = customContainer.getBoundingClientRect();
+          const scrollRange = window.innerHeight * 1.3;
+          const targetY = containerRect.top + window.scrollY + scrollRange - navHeight + 20;
+          customSmoothScroll(targetY, 1600);
+        }
+      } else {
+        window.location.hash = 'our-story';
+      }
+    } else {
+      setActiveLabel(label);
+      window.location.hash = '';
+    }
   };
 
   /* Icon buttons (cart, login) navigate without setting an active nav label */
   const navigateIcon = (tab: 'cakes' | 'checkout' | 'login') => {
     setTab(tab);
     setMobileOpen(false);
+    window.location.hash = '';
+    if (tab === 'cakes') {
+      customSmoothScroll(0, 1600);
+    }
   };
 
   return (
@@ -126,6 +286,9 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setTab }) => {
         .nav-link[aria-current="true"] {
           background: var(--color-bg);
         }
+        .nav-link:focus {
+          outline: none;
+        }
 
         /* ── Icon group (desktop + shared) ───────────────── */
         .nav-icons {
@@ -152,6 +315,9 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setTab }) => {
           background: var(--color-hover-overlay);
           transform: scale(1.05);
         }
+        .nav-icon-btn:focus {
+          outline: none;
+        }
         .nav-icon-btn svg {
           width: var(--nav-icon-size);
           height: var(--nav-icon-size);
@@ -177,6 +343,63 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setTab }) => {
           justify-content: center;
           line-height: 1;
           pointer-events: none;
+        }
+
+        /* ── Logged-in Initials Avatar ──────────────────────── */
+        .nav-avatar-btn {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 44px;
+          height: 44px;
+          border-radius: var(--radius-full);
+          cursor: pointer;
+          background: none;
+          border: none;
+          padding: 0;
+          transition: transform var(--transition-fast);
+        }
+        .nav-avatar-btn:hover { transform: scale(1.08); }
+        .nav-avatar-btn:focus { outline: none; }
+
+        .nav-avatar-circle {
+          width: 38px;
+          height: 38px;
+          border-radius: 50%;
+          background: var(--nav-bg, #E8D96B);
+          border: 2.5px solid var(--color-ink);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-family: var(--font-logo);
+          font-size: 1rem;
+          letter-spacing: 0.03em;
+          color: var(--color-ink);
+          position: relative;
+          overflow: visible;
+          animation: avatar-pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        }
+        @keyframes avatar-pop-in {
+          0% { transform: scale(0.3) rotate(-15deg); opacity: 0; }
+          100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        /* Spinning ring around avatar */
+        .nav-avatar-ring {
+          position: absolute;
+          inset: -5px;
+          border-radius: 50%;
+          border: 2px dashed rgba(26,26,26,0.25);
+          animation: avatar-ring-spin 8s linear infinite;
+          pointer-events: none;
+        }
+        @keyframes avatar-ring-spin {
+          to { transform: rotate(360deg); }
+        }
+        /* Pulse glow on hover */
+        .nav-avatar-btn:hover .nav-avatar-circle {
+          box-shadow: 0 0 0 4px rgba(26,26,26,0.10);
         }
 
         /* ── Mobile hamburger ─────────────────────────────── */
@@ -207,6 +430,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setTab }) => {
             transition: background var(--transition-fast);
           }
           .nav-hamburger:hover { background: var(--color-hover-overlay); }
+          .nav-hamburger:focus { outline: none; }
           .nav-hamburger svg { width: var(--nav-icon-size); height: var(--nav-icon-size); stroke-width: 1.8; }
 
           /* Slide-down mobile drawer */
@@ -315,7 +539,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setTab }) => {
             <button
               id="nav-cart-btn"
               className="nav-icon-btn"
-              onClick={() => navigateIcon('checkout')}
+              onClick={() => setIsCartOpen(true)}
               aria-label={`Cart — ${cartCount} item${cartCount !== 1 ? 's' : ''}`}
             >
               <ShoppingBag />
@@ -328,12 +552,15 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setTab }) => {
             {user ? (
               <button
                 id="nav-account-btn"
-                className="nav-icon-btn"
-                onClick={logout}
-                aria-label={`Logged in as ${user.name || user.mobile} — click to log out`}
-                title={`${user.name || user.mobile} — Log out`}
+                className="nav-avatar-btn"
+                onClick={() => setIsProfileOpen(true)}
+                aria-label={`Profile — ${user.name || user.mobile}`}
+                title={`${user.name || user.mobile} — View Profile`}
               >
-                <CircleUser />
+                <div className="nav-avatar-circle">
+                  {getInitials(user.name)}
+                  <div className="nav-avatar-ring" aria-hidden="true" />
+                </div>
               </button>
             ) : (
               <button
@@ -399,6 +626,14 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setTab }) => {
           )}
         </div>
       </div>
+
+      {/* ─── Profile Drawer ─────────────────────────────────── */}
+      <ProfileDrawer 
+        isOpen={isProfileOpen} 
+        onClose={() => setIsProfileOpen(false)}
+        onEditProfile={() => navigateIcon('login')}
+        onGoToOrders={() => navigateIcon('checkout')}
+      />
     </>
   );
 };

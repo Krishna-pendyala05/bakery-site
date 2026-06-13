@@ -5,6 +5,8 @@ export interface User {
   id: number;
   mobile: string;
   name?: string;
+  email?: string;
+  address?: string;
   verified: boolean;
 }
 
@@ -15,6 +17,7 @@ interface AuthContextType {
   otpSent: boolean;
   sendOtp: (mobile: string) => Promise<boolean>;
   verifyOtp: (mobile: string, otp: string) => Promise<boolean>;
+  updateProfile: (profileData: { name: string; email: string; address: string; pincode: string }) => Promise<boolean>;
   logout: () => void;
   clearError: () => void;
 }
@@ -88,6 +91,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setError(null);
   };
 
+  const updateProfile = async (profileData: { name: string; email: string; address: string; pincode: string }): Promise<boolean> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.put('/auth/profile', profileData);
+      setUser(response.data.user);
+      return true;
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to update profile.');
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const clearError = () => setError(null);
 
   return (
@@ -99,6 +117,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         otpSent,
         sendOtp,
         verifyOtp,
+        updateProfile,
         logout,
         clearError,
       }}

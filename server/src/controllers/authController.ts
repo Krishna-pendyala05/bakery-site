@@ -103,6 +103,8 @@ export const verifyOtp = async (req: Request, res: Response): Promise<void> => {
         id: updatedUser.id,
         mobile: updatedUser.mobile,
         name: updatedUser.name,
+        email: updatedUser.email,
+        address: updatedUser.address,
         verified: updatedUser.verified
       }
     });
@@ -134,11 +136,86 @@ export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
         id: user.id,
         mobile: user.mobile,
         name: user.name,
+        email: user.email,
+        address: user.address,
         verified: user.verified
       }
     });
   } catch (error: any) {
     console.error('Error in getMe:', error);
     res.status(500).json({ message: 'Internal server error fetching user data' });
+  }
+};
+
+// Update User Profile (Register Name, Email, Address)
+export const updateProfile = async (req: AuthRequest, res: Response): Promise<void> => {
+  if (!req.user) {
+    res.status(401).json({ message: 'Unauthorized session' });
+    return;
+  }
+
+  const { name, email, address, pincode } = req.body;
+
+  if (!name || !email || !address || !pincode) {
+    res.status(400).json({ message: 'All registration fields are required' });
+    return;
+  }
+
+  // Validate Email Format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    res.status(400).json({ message: 'Please enter a valid email address' });
+    return;
+  }
+
+  // Validate Pincode: Hyderabad pincodes start with 500 and are 6 digits
+  const pincodeRegex = /^500\d{3}$/;
+  if (!pincodeRegex.test(pincode)) {
+    res.status(400).json({ message: 'We only deliver within Hyderabad (pincodes starting with 500)' });
+    return;
+  }
+
+  // List of valid delivery pincodes within 5-10km range of Central Hyderabad
+  const deliveryPincodes = new Set([
+    '500001', '500002', '500003', '500004', '500007', '500008', '500012', 
+    '500013', '500016', '500018', '500020', '500024', '500025', '500027', 
+    '500028', '500029', '500030', '500034', '500035', '500036', '500038', 
+    '500041', '500044', '500045', '500048', '500053', '500057', '500059', 
+    '500060', '500063', '500064', '500065', '500068', '500072', '500073',
+    '500074', '500075', '500076', '500079', '500080', '500081', '500082',
+    '500084', '500085', '500089', '500090', '500095', '500097'
+  ]);
+
+  if (!deliveryPincodes.has(pincode)) {
+    res.status(400).json({ message: 'This pincode is outside our 5-10 km delivery radius in Hyderabad.' });
+    return;
+  }
+
+  const combinedAddress = `${address}, Hyderabad - ${pincode}`;
+
+  try {
+    const updatedUser = await prisma.user.update({
+      where: { id: req.user.id },
+      data: {
+        name,
+        email,
+        address: combinedAddress,
+      },
+    });
+
+    res.json({
+      message: 'Profile registered successfully',
+      user: {
+        id: updatedUser.id,
+        mobile: updatedUser.mobile,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        address: updatedUser.address,
+        verified: updatedUser.verified
+      }
+    });
+  } catch (error: any) {
+    console.error('Error in updateProfile:', error);
+    res.status(500).json({ message: 'Internal server error updating registration profile' });
   }
 };

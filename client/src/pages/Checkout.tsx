@@ -27,7 +27,7 @@ export const Checkout: React.FC<CheckoutProps> = ({ onRequireLogin, onContinueSh
   const [successOrder, setSuccessOrder] = useState<Order | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const deliveryFee = cartTotal > 50 ? 0 : 5.99;
+  const deliveryFee = cartTotal > 1500 ? 0 : 150;
   const finalTotal = cartTotal + deliveryFee;
 
   const handlePlaceOrder = async (e: React.FormEvent) => {
@@ -49,7 +49,7 @@ export const Checkout: React.FC<CheckoutProps> = ({ onRequireLogin, onContinueSh
       const orderItems = cart.map(item => ({
         cakeId: item.cake.id,
         quantity: item.quantity,
-        price: item.cake.price,
+        price: item.price,
       }));
 
       const response = await api.post('/orders', {
@@ -85,7 +85,7 @@ export const Checkout: React.FC<CheckoutProps> = ({ onRequireLogin, onContinueSh
       <div>
         <h2>Order Placed!</h2>
         <p>Reference: #{successOrder.id}</p>
-        <p>Total: ${successOrder.totalAmount.toFixed(2)}</p>
+        <p>Total: ₹{successOrder.totalAmount.toFixed(2)}</p>
         {deliveryDate && <p>Scheduled: {deliveryDate} at {deliveryTime}</p>}
         <button onClick={onContinueShopping}>Continue Shopping</button>
       </div>
@@ -112,19 +112,19 @@ export const Checkout: React.FC<CheckoutProps> = ({ onRequireLogin, onContinueSh
         <h2>Your Basket</h2>
         <ul>
           {cart.map(item => (
-            <li key={item.cake.id}>
+            <li key={item.id}>
               <img src={item.cake.imageUrl} alt={item.cake.name} width={64} />
               <div>
-                <h3>{item.cake.name}</h3>
+                <h3>{item.cake.name} ({item.weight})</h3>
                 <p>{item.cake.category}</p>
-                <p>${item.cake.price.toFixed(2)} each</p>
+                <p>₹{item.price.toFixed(2)} each</p>
               </div>
               <div>
-                <button onClick={() => updateQuantity(item.cake.id, item.quantity - 1)}>−</button>
+                <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>−</button>
                 <span>{item.quantity}</span>
-                <button onClick={() => updateQuantity(item.cake.id, item.quantity + 1)}>+</button>
+                <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
               </div>
-              <button onClick={() => removeFromCart(item.cake.id)}>Remove</button>
+              <button onClick={() => removeFromCart(item.id)}>Remove</button>
             </li>
           ))}
         </ul>
@@ -203,10 +203,10 @@ export const Checkout: React.FC<CheckoutProps> = ({ onRequireLogin, onContinueSh
       {/* Order summary */}
       <section aria-label="Order summary">
         <h2>Summary</h2>
-        <p>Items subtotal: ${cartTotal.toFixed(2)}</p>
-        <p>Delivery fee: {deliveryFee === 0 ? 'FREE' : `$${deliveryFee.toFixed(2)}`}</p>
-        {deliveryFee > 0 && <p>Add ${(50 - cartTotal).toFixed(2)} more for free delivery</p>}
-        <p><strong>Total: ${finalTotal.toFixed(2)}</strong></p>
+        <p>Items subtotal: ₹{cartTotal.toFixed(2)}</p>
+        <p>Delivery fee: {deliveryFee === 0 ? 'FREE' : `₹${deliveryFee.toFixed(2)}`}</p>
+        {deliveryFee > 0 && <p>Add ₹{(1500 - cartTotal).toFixed(2)} more for free delivery</p>}
+        <p><strong>Total: ₹{finalTotal.toFixed(2)}</strong></p>
 
         {error && <p role="alert">{error}</p>}
 

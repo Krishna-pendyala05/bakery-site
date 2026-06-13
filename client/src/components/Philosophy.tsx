@@ -6,7 +6,7 @@ export const Philosophy: React.FC = () => (
       /* ── Philosophy Section ─────────────────────────────────── */
       .philosophy-section {
         background: var(--color-bg);
-        padding: 48px clamp(24px, 8vw, 160px) 56px;
+        padding: 24px clamp(24px, 8vw, 160px) 32px;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -60,7 +60,7 @@ export const Philosophy: React.FC = () => (
       /* ── Responsive ─────────────────────────────────────────── */
       @media (max-width: 700px) {
         .philosophy-section {
-          padding: 36px 24px 48px;
+          padding: 20px 24px 28px;
           gap: 20px;
         }
         .philosophy-p {
