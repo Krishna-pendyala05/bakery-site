@@ -16,9 +16,22 @@
   --color-brand-dark:   #e8d96a;   /* Hover / pressed yellow */
   --color-ink:          #1A1A1A;   /* Near-black for text & icons */
   --color-ink-muted:    #555550;   /* Secondary text */
-  --color-bg:           #FDFDF5;   /* Off-white page background */
+  --color-bg:           #FFFFFF;   /* Page background */
   --color-surface:      #FFFFFF;   /* Card / panel background */
   --color-border:       #E8E4CC;   /* Subtle dividers */
+
+  /* Hero section — named so changes are one-line edits */
+  --color-hero-pink:       #F4ABBA;   /* right panel background */
+  --color-hero-rose:       #DDA3B2;   /* reveal title colour */
+  --color-hero-rose-dark:  #A36D7B;   /* reveal subtitle colour */
+  --color-ticker-bg:       #B8CEDF;   /* ticker strip background */
+  --color-ticker-ink:      #1A2E5C;   /* ticker text colour */
+
+  /* UI interactions */
+  --color-hover-overlay:   rgba(0, 0, 0, 0.08); /* nav / button hover tint */
+
+  /* Scrollbar */
+  --color-scrollbar-track: #222222;   /* dark scrollbar track */
 
   /* Legacy aliases (keep backward compat) */
   --color-primary:      var(--color-brand);
@@ -29,6 +42,7 @@
   --font-logo:    'Jaro', sans-serif;
   --font-heading: 'Cormorant SC', serif;
   --font-body:    'Cormorant SC', serif;
+  --font-quote:   'Jura', sans-serif;
 
   /* Spacing scale */
   --space-1: 4px;
@@ -87,3 +101,30 @@ ul, ol {
   list-style: none;
 }
 
+/* ── Custom Scrollbar ──────────────────────────────────── */
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-brand) var(--color-scrollbar-track);
+}
+
+/* WebKit (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-scrollbar-track);
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-brand);
+  border-radius: 8px;
+  border: 1.5px solid var(--color-scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand-dark);
+}

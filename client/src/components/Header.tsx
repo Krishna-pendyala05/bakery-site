@@ -67,7 +67,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setTab }) => {
           width: 100%;
           height: var(--nav-height);
           background: var(--nav-bg);
-          border-bottom: 10px solid #FFFFFF;
+          border-bottom: 10px solid var(--color-bg);
           display: flex;
           align-items: center;
           padding: 0 var(--space-7);
@@ -121,10 +121,10 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setTab }) => {
           transition: background var(--transition-fast);
         }
         .nav-link:hover {
-          background: #ffffff;
+          background: var(--color-bg);
         }
         .nav-link[aria-current="true"] {
-          background: #ffffff;
+          background: var(--color-bg);
         }
 
         /* ── Icon group (desktop + shared) ───────────────── */
@@ -149,7 +149,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setTab }) => {
           transition: background var(--transition-fast), transform var(--transition-fast);
         }
         .nav-icon-btn:hover {
-          background: rgba(0,0,0,0.08);
+          background: var(--color-hover-overlay);
           transform: scale(1.05);
         }
         .nav-icon-btn svg {
@@ -206,7 +206,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setTab }) => {
             cursor: pointer;
             transition: background var(--transition-fast);
           }
-          .nav-hamburger:hover { background: rgba(0,0,0,0.08); }
+          .nav-hamburger:hover { background: var(--color-hover-overlay); }
           .nav-hamburger svg { width: var(--nav-icon-size); height: var(--nav-icon-size); stroke-width: 1.8; }
 
           /* Slide-down mobile drawer */
@@ -223,7 +223,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setTab }) => {
             transition: max-height 300ms cubic-bezier(0.4, 0, 0.2, 1),
                         opacity 200ms ease;
             opacity: 0;
-            border-bottom: 1.5px solid rgba(0,0,0,0.1);
+            border-bottom: 1.5px solid var(--color-hover-overlay);
           }
           .nav-drawer.open {
             max-height: 320px;
@@ -255,12 +255,12 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setTab }) => {
           }
           .nav-drawer-link:hover,
           .nav-drawer-link[aria-current="true"] {
-            background: rgba(0,0,0,0.07);
+            background: var(--color-hover-overlay);
           }
 
           .nav-drawer-divider {
             height: 1px;
-            background: rgba(0,0,0,0.1);
+            background: var(--color-hover-overlay);
             margin: var(--space-2) 0;
           }
 
@@ -286,11 +286,11 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setTab }) => {
           {/* Logo */}
           <span
             className="nav-logo"
-            onClick={() => navigate('cakes')}
+            onClick={() => navigateIcon('cakes')}
             role="link"
             aria-label="L'Étoile Sucrée — Home"
             tabIndex={0}
-            onKeyDown={e => e.key === 'Enter' && navigate('cakes')}
+            onKeyDown={e => e.key === 'Enter' && navigateIcon('cakes')}
           >
             L'Étoile Sucrée
           </span>
